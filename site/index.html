@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>The Bridgerton Name Thief</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single sealed case file read top to bottom; suspects in a calling-card grid, one dossier panel, then the accusation. */
+:root{
+  --paper:#ECE9F2; --sheet:#F6F4F9; --ink:#251B36; --muted:#5E556E; --rule:#CEC7DA;
+  --seal:#8E2443; --seal-ink:#FFF4F6; --line:#43307F; --band:#DED8EA; --good:#2F6B4A; --bad:#8E2443;
+  --display:"IM Fell English SC","Iowan Old Style",Georgia,serif;
+  --fell:"IM Fell English",Georgia,serif;
+  --body:"Spectral",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#16111E; --sheet:#1F1829; --ink:#ECE6F4; --muted:#A99FBA; --rule:#3A3049;
+  --seal:#E07894; --seal-ink:#1A0E14; --line:#B8A5F2; --band:#2A2138; --good:#7FC9A0; --bad:#E07894; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#16111E; --sheet:#1F1829; --ink:#ECE6F4; --muted:#A99FBA; --rule:#3A3049;
+  --seal:#E07894; --seal-ink:#1A0E14; --line:#B8A5F2; --band:#2A2138; --good:#7FC9A0; --bad:#E07894; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;line-height:1.1}
+p{margin:0}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.prose{max-width:62ch;display:flex;flex-direction:column;gap:14px}
+em{font-family:var(--fell);font-style:italic;font-size:1.05em}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start}
+.hero h1{font-size:clamp(40px,7vw,76px);letter-spacing:-.01em}
+.hero h1 span{display:block;font-family:var(--fell);font-style:italic;font-size:.42em;color:var(--muted);letter-spacing:0;margin-top:10px}
+.hero .prose{margin-top:22px}
+.seal{width:116px;height:116px;border-radius:50%;background:var(--seal);color:var(--seal-ink);display:grid;place-items:center;text-align:center;font-family:var(--display);font-size:15px;line-height:1.15;transform:rotate(-9deg);box-shadow:inset 0 0 0 6px color-mix(in oklab,var(--seal) 70%,#000 30%);flex:none}
+.seal b{display:block;font-size:30px;font-weight:400}
+.seal.open{transform:rotate(-9deg) scale(1.04)}
+.facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:22px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.facts b{color:var(--ink);font-weight:500}
+
+/* suspects */
+.sect{display:flex;flex-direction:column;gap:20px}
+.sect h2{font-size:clamp(28px,4vw,40px)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr}.seal{width:92px;height:92px;font-size:12px}.seal b{font-size:24px}}
+.card{appearance:none;font:inherit;color:inherit;text-align:left;background:var(--sheet);border:1px solid var(--rule);border-radius:2px;padding:16px 16px 14px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:var(--muted)}
+.card:focus-visible{outline:2px solid var(--line);outline-offset:2px}
+.card[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.card .nm{font-family:var(--display);font-size:26px;line-height:1}
+.card .role{font-family:var(--fell);font-style:italic;color:var(--muted);font-size:15px;line-height:1.3}
+.card .stat{margin-top:auto;padding-top:10px;border-top:1px dashed var(--rule);font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.card .stat b{color:var(--ink);font-weight:500}
+.card .chk{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.card.seen .chk{color:var(--line)}
+
+/* dossier */
+.dossier{background:var(--sheet);border:1px solid var(--rule);padding:24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:28px}
+@media (max-width:760px){.dossier{grid-template-columns:1fr;padding:18px}}
+.dossier h3{font-size:34px}
+.dossier .tm{font-family:var(--fell);font-style:italic;font-size:19px;line-height:1.45}
+.mult{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mult b{font-family:var(--display);font-size:52px;font-weight:400;line-height:1}
+.verdictTag{display:inline-flex;align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;padding:3px 8px;border-radius:2px}
+.dleft{display:flex;flex-direction:column;gap:14px;min-width:0}
+.chartbox{position:relative;min-width:0}
+.chartbox svg{display:block;width:100%;height:auto;overflow:visible}
+.chartcap{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:6px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;line-height:1.45;padding:6px 9px;border-radius:2px;white-space:nowrap;transform:translate(-50%,-115%);font-variant-numeric:tabular-nums}
+.axis text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.axis line{stroke:var(--rule)}
+
+/* accuse */
+.accuse{display:flex;flex-wrap:wrap;gap:10px}
+.acc{appearance:none;font-family:var(--display);font-size:20px;color:var(--ink);background:transparent;border:1px solid var(--ink);padding:8px 18px;border-radius:999px;cursor:pointer}
+.acc:hover{background:var(--band)}
+.acc:focus-visible{outline:2px solid var(--line);outline-offset:2px}
+.acc.wrong{opacity:.45;text-decoration:line-through}
+.acc.right{background:var(--seal);border-color:var(--seal);color:var(--seal-ink)}
+.ruling{font-family:var(--fell);font-style:italic;font-size:19px;min-height:2em;max-width:62ch}
+.reveal{border-top:2px solid var(--ink);padding-top:28px;display:flex;flex-direction:column;gap:22px}
+.reveal h2{font-size:clamp(32px,5vw,52px)}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:760px){.trio{grid-template-columns:1fr}}
+.trio .label{margin-bottom:4px}
+.notes{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:8px;max-width:72ch;border-top:1px solid var(--rule);padding-top:20px}
+.notes a{color:var(--line)}
+table.tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--rule)}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl th{color:var(--muted);font-weight:500}
+.tblwrap{overflow-x:auto}
+details summary{cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="label">Case file · UK baby names · TidyTuesday 16 June 2026</div>
+      <h1>The Bridgerton Name Thief<span>Which character's name did the show actually steal into the nurseries?</span></h1>
+      <div class="prose">
+        <p>On Christmas Day 2020, a period drama about eight siblings named A to H arrived on Netflix. Since then, the birth registers of England and Wales have shown suspicious activity. Somebody's name has been climbing.</p>
+        <p>Eight suspects. One culprit. Open each dossier, weigh the evidence, then make your accusation below.</p>
+      </div>
+      <div class="facts">
+        <span>Season 1 <b>Dec 2020</b></span><span>Season 2 <b>Mar 2022</b></span><span>Season 3 <b>May 2024</b></span><span>Evidence <b>births 2012 to 2024</b></span>
+      </div>
+    </div>
+    <div class="seal" id="seal" aria-hidden="true"><div>Case<b>№ 24</b>Sealed</div></div>
+  </header>
+
+  <section class="sect" aria-labelledby="s1">
+    <div class="label">I · The lineup</div>
+    <h2 id="s1">Interrogate the suspects</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="dossier" id="dossier" aria-live="polite"></section>
+
+  <section class="sect" aria-labelledby="s2">
+    <div class="label">II · The accusation</div>
+    <h2 id="s2">Who stole the nurseries?</h2>
+    <p class="prose">You get to point at one name. Choose carefully: the society pages never forget a wrong accusation.</p>
+    <div class="accuse" id="accuse"></div>
+    <p class="ruling" id="ruling"></p>
+  </section>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="label">III · The verdict</div>
+    <h2>Daphne did it, in all three nations</h2>
+    <div class="prose">
+      <p>Before the show, Daphne was a name for grandmothers: about 41 of every 100,000 girls born in England and Wales in 2018 and 2019. By 2024 it was 131, more than three times as common, and its rank rose from 382nd to 150th. The climb starts in 2021, the first full year after the premiere, and has not paused since.</p>
+      <p>Scotland confirms it. Its 2025 register, the newest in this file, shows 24 baby Daphnes against 6 the year before, a jump from 476th to 172nd. Eloise, the show's sharp-tongued younger sister, is the likely accomplice: up 40% in England and Wales and to 91st in Scotland. Kate and Anthony, the Season 2 couple, fell everywhere.</p>
+    </div>
+    <div class="trio" id="trio"></div>
+    <details>
+      <summary>Show the full evidence table (England and Wales, per 100,000 girls or boys)</summary>
+      <div class="tblwrap" id="tbl"></div>
+    </details>
+  </section>
+
+  <footer class="notes">
+    <p><b>How the case was built.</b> Counts come from the ONS (England and Wales, 1996 to 2024), NRS (Scotland, to 2025) and NISRA (Northern Ireland, to 2025), compiled for TidyTuesday by Nicola Rennie. Each name's count is divided by the total named babies of that sex in that year, so falling birth rates don't flatter or hide a trend. The multiplier compares 2024 with the 2018 and 2019 average.</p>
+    <p>Names with fewer than 3 babies are suppressed, and spellings count separately (Daphne and Daphnie are different names here). This shows timing that lines up with the show; it can't prove the show caused it.</p>
+    <p><a href="https://github.com/rfordatascience/tidytuesday/tree/main/data/2026/2026-06-16" target="_blank" rel="noopener">Dataset on GitHub</a></p>
+  </footer>
+</div>
+
+<script>
+const DATA = {"ew": {"Daphne": [[2012, 46, 825, 14.3], [2013, 52, 750, 16.9], [2014, 62, 645, 20.2], [2015, 87, 496, 28.3], [2016, 83, 516, 27.0], [2017, 93, 472, 31.1], [2018, 117, 382, 40.6], [2019, 115, 382, 41.1], [2020, 142, 320, 52.9], [2021, 214, 234, 78.1], [2022, 268, 190, 101.7], [2023, 299, 172, 116.5], [2024, 338, 150, 131.0]], "Eloise": [[2012, 515, 110, 159.9], [2013, 537, 105, 174.1], [2014, 508, 112, 165.7], [2015, 559, 101, 181.5], [2016, 503, 112, 163.8], [2017, 464, 119, 155.1], [2018, 482, 107, 167.2], [2019, 394, 129, 140.7], [2020, 386, 129, 143.8], [2021, 492, 106, 179.5], [2022, 544, 88, 206.4], [2023, 440, 109, 171.5], [2024, 556, 85, 215.5]], "Penelope": [[2012, 240, 209, 74.5], [2013, 411, 130, 133.2], [2014, 575, 101, 187.5], [2015, 832, 69, 270.2], [2016, 972, 63, 316.5], [2017, 1020, 55, 341.0], [2018, 1068, 48, 370.5], [2019, 1157, 41, 413.1], [2020, 1020, 44, 380.0], [2021, 1194, 38, 435.7], [2022, 1206, 32, 457.7], [2023, 1156, 33, 450.6], [2024, 1133, 36, 439.2]], "Kate": [[2012, 165, 290, 51.2], [2013, 147, 318, 47.7], [2014, 126, 359, 41.1], [2015, 117, 393, 38.0], [2016, 97, 452, 31.6], [2017, 89, 491, 29.8], [2018, 69, 596, 23.9], [2019, 65, 609, 23.2], [2020, 47, 771, 17.5], [2021, 51, 734, 18.6], [2022, 47, 775, 17.8], [2023, 30, 1108, 11.7], [2024, 25, 1302, 9.7]], "Francesca": [[2012, 622, 90, 193.1], [2013, 679, 81, 220.1], [2014, 646, 87, 210.7], [2015, 661, 83, 214.7], [2016, 611, 88, 198.9], [2017, 600, 89, 200.6], [2018, 567, 93, 196.7], [2019, 491, 106, 175.3], [2020, 459, 112, 171.0], [2021, 466, 110, 170.0], [2022, 441, 118, 167.4], [2023, 419, 117, 163.3], [2024, 455, 102, 176.4]], "Hyacinth": [[2024, 3, 5892, 1.2]], "Anthony": [[2012, 414, 142, 118.8], [2013, 400, 148, 119.9], [2014, 422, 135, 127.0], [2015, 388, 144, 116.4], [2016, 422, 140, 127.1], [2017, 383, 150, 118.6], [2018, 355, 158, 113.5], [2019, 322, 164, 106.0], [2020, 318, 166, 110.0], [2021, 269, 202, 91.2], [2022, 282, 180, 99.2], [2023, 280, 184, 101.2], [2024, 228, 216, 82.1]], "Benedict": [[2012, 114, 370, 32.7], [2013, 117, 350, 35.1], [2014, 132, 341, 39.7], [2015, 136, 341, 40.8], [2016, 93, 442, 28.0], [2017, 91, 454, 28.2], [2018, 77, 504, 24.6], [2019, 40, 787, 13.2], [2020, 49, 690, 17.0], [2021, 57, 641, 19.3], [2022, 50, 679, 17.6], [2023, 54, 651, 19.5], [2024, 49, 721, 17.6]], "Colin": [[2012, 43, 754, 12.3], [2013, 35, 850, 10.5], [2014, 48, 684, 14.4], [2015, 38, 821, 11.4], [2016, 45, 748, 13.6], [2017, 37, 848, 11.5], [2018, 23, 1158, 7.4], [2019, 30, 952, 9.9], [2020, 27, 1019, 9.3], [2021, 34, 888, 11.5], [2022, 25, 1104, 8.8], [2023, 15, 1610, 5.4], [2024, 30, 1000, 10.8]], "Simon": [[2012, 170, 274, 48.8], [2013, 151, 295, 45.3], [2014, 150, 305, 45.2], [2015, 134, 345, 40.2], [2016, 130, 359, 39.2], [2017, 125, 368, 38.7], [2018, 102, 414, 32.6], [2019, 106, 404, 34.9], [2020, 98, 418, 33.9], [2021, 107, 401, 36.3], [2022, 89, 453, 31.3], [2023, 93, 419, 33.6], [2024, 74, 524, 26.6]]}, "sc": {"Daphne": [[2014, 4, 681, 16.8], [2017, 4, 666, 18.4], [2018, 4, 680, 18.9], [2020, 4, 636, 21.1], [2021, 4, 652, 20.4], [2022, 7, 418, 37.3], [2023, 6, 482, 32.8], [2024, 6, 476, 33.0], [2025, 24, 172, 134.1]], "Eloise": [[2012, 17, 267, 69.7], [2013, 27, 169, 115.9], [2014, 19, 235, 80.0], [2015, 20, 213, 87.7], [2016, 15, 276, 66.9], [2017, 19, 229, 87.5], [2018, 24, 182, 113.6], [2019, 23, 185, 112.8], [2020, 26, 157, 137.0], [2021, 28, 156, 143.1], [2022, 26, 163, 138.7], [2023, 28, 152, 152.9], [2024, 36, 124, 198.0], [2025, 48, 91, 268.3]], "Penelope": [[2012, 13, 321, 53.3], [2013, 23, 194, 98.8], [2014, 22, 212, 92.6], [2015, 46, 101, 201.8], [2016, 37, 131, 165.0], [2017, 50, 88, 230.2], [2018, 50, 87, 236.6], [2019, 45, 97, 220.7], [2020, 40, 109, 210.7], [2021, 54, 81, 275.9], [2022, 50, 83, 266.7], [2023, 50, 86, 273.0], [2024, 51, 81, 280.6], [2025, 58, 71, 324.2]], "Kate": [[2012, 21, 214, 86.1], [2013, 21, 209, 90.2], [2014, 20, 230, 84.2], [2015, 17, 236, 74.6], [2016, 15, 276, 66.9], [2017, 22, 201, 101.3], [2018, 15, 255, 71.0], [2019, 12, 304, 58.9], [2020, 11, 313, 57.9], [2021, 9, 363, 46.0], [2022, 8, 380, 42.7], [2023, 3, 749, 16.4], [2024, 5, 541, 27.5], [2025, 6, 474, 33.5]], "Francesca": [[2012, 23, 191, 94.3], [2013, 25, 183, 107.3], [2014, 13, 306, 54.7], [2015, 14, 281, 61.4], [2016, 24, 196, 107.0], [2017, 23, 191, 105.9], [2018, 22, 200, 104.1], [2019, 26, 168, 127.5], [2020, 23, 170, 121.2], [2021, 21, 198, 107.3], [2022, 11, 303, 58.7], [2023, 19, 210, 103.8], [2024, 28, 152, 154.0], [2025, 21, 191, 117.4]], "Hyacinth": [], "Anthony": [[2012, 48, 131, 178.7], [2013, 42, 137, 162.2], [2014, 54, 117, 206.5], [2015, 59, 111, 231.5], [2016, 45, 136, 178.3], [2017, 38, 151, 156.6], [2018, 42, 144, 179.7], [2019, 34, 158, 150.4], [2020, 28, 164, 132.7], [2021, 33, 153, 153.1], [2022, 19, 217, 90.3], [2023, 25, 182, 122.9], [2024, 30, 152, 150.4], [2025, 17, 243, 86.5]], "Benedict": [[2013, 4, 590, 15.4], [2014, 7, 439, 26.8], [2015, 7, 426, 27.5], [2016, 4, 592, 15.9], [2017, 3, 733, 12.4], [2019, 4, 609, 17.7], [2020, 5, 536, 23.7], [2023, 6, 482, 29.5]], "Colin": [[2012, 16, 261, 59.6], [2013, 14, 280, 54.1], [2014, 13, 302, 49.7], [2015, 15, 273, 58.9], [2016, 11, 331, 43.6], [2017, 10, 352, 41.2], [2018, 6, 472, 25.7], [2019, 10, 334, 44.2], [2020, 4, 599, 19.0], [2021, 7, 437, 32.5], [2022, 8, 392, 38.0], [2023, 3, 728, 14.7], [2025, 6, 495, 30.5]], "Simon": [[2012, 13, 282, 48.4], [2013, 14, 280, 54.1], [2014, 11, 336, 42.1], [2015, 3, 686, 11.8], [2016, 9, 375, 35.7], [2017, 5, 532, 20.6], [2018, 8, 392, 34.2], [2019, 6, 464, 26.5], [2020, 7, 426, 33.2], [2021, 4, 605, 18.6], [2022, 3, 703, 14.3], [2023, 7, 435, 34.4], [2024, 5, 535, 25.1]]}, "ni": {"Daphne": [[2025, 3, 397, 41.2]], "Eloise": [[2012, 8, 229, 76.4], [2013, 13, 150, 128.4], [2014, 11, 178, 110.4], [2015, 5, 312, 50.5], [2016, 11, 190, 112.0], [2017, 14, 154, 150.3], [2018, 14, 151, 148.8], [2019, 15, 138, 168.4], [2020, 10, 178, 122.1], [2021, 10, 190, 113.2], [2022, 18, 121, 219.3], [2023, 15, 135, 191.8], [2024, 18, 110, 243.2], [2025, 18, 117, 247.0]], "Penelope": [[2012, 4, 383, 38.2], [2013, 4, 370, 39.5], [2014, 8, 229, 80.3], [2015, 7, 248, 70.7], [2016, 17, 129, 173.1], [2017, 17, 134, 182.5], [2018, 15, 145, 159.5], [2019, 20, 107, 224.5], [2020, 19, 111, 232.1], [2021, 20, 116, 226.5], [2022, 19, 114, 231.5], [2023, 21, 99, 268.5], [2024, 14, 144, 189.1], [2025, 19, 111, 260.8]], "Kate": [[2012, 26, 98, 248.3], [2013, 38, 61, 375.4], [2014, 23, 106, 230.8], [2015, 31, 81, 313.1], [2016, 28, 92, 285.0], [2017, 19, 122, 203.9], [2018, 24, 101, 255.2], [2019, 28, 81, 314.3], [2020, 30, 71, 366.4], [2021, 21, 108, 237.8], [2022, 21, 103, 255.8], [2023, 16, 126, 204.6], [2024, 15, 134, 202.6], [2025, 9, 191, 123.5]], "Francesca": [[2012, 4, 383, 38.2], [2013, 11, 178, 108.7], [2014, 7, 247, 70.2], [2015, 7, 248, 70.7], [2016, 6, 276, 61.1], [2017, 7, 239, 75.1], [2018, 6, 273, 63.8], [2019, 6, 263, 67.4], [2020, 4, 333, 48.9], [2021, 6, 266, 67.9], [2022, 8, 218, 97.5], [2023, 6, 264, 76.7], [2024, 7, 227, 94.6], [2025, 8, 205, 109.8]], "Hyacinth": [], "Anthony": [[2012, 23, 120, 193.3], [2013, 19, 138, 168.9], [2014, 25, 118, 219.0], [2015, 19, 142, 168.3], [2016, 24, 125, 216.2], [2017, 11, 194, 104.1], [2018, 20, 121, 193.7], [2019, 15, 160, 145.9], [2020, 13, 169, 138.0], [2021, 12, 192, 121.3], [2022, 16, 147, 174.2], [2023, 13, 169, 149.5], [2024, 10, 202, 117.8], [2025, 5, 314, 60.4]], "Benedict": [], "Colin": [[2012, 6, 273, 50.4], [2013, 3, 398, 26.7], [2014, 3, 398, 26.3], [2017, 4, 363, 37.9], [2018, 3, 416, 29.1], [2021, 3, 433, 30.3]], "Simon": [[2012, 7, 247, 58.8], [2013, 4, 343, 35.6], [2014, 3, 398, 26.3], [2015, 7, 259, 62.0], [2017, 3, 415, 28.4], [2018, 3, 416, 29.1], [2019, 3, 418, 29.2], [2022, 5, 311, 54.4]]}};
+const S = [
+ {n:"Daphne", sex:"girl", role:"Eldest daughter, Season 1 heroine", guilty:true,
+  tm:"Barely registered before 2020. Then, every single year after the premiere, more girls carry her name than the year before.",
+  wrong:""},
+ {n:"Eloise", sex:"girl", role:"The bookish sister who wants no husband",
+  tm:"Up 40% on her pre-show level, but the path wobbles: she dipped in 2023 before rising again. Scotland shows a steady climb that began years before the show.",
+  wrong:"Eloise has risen, but she was climbing in Scotland since 2016 and stumbled in England in 2023. An accomplice at most."},
+ {n:"Penelope", sex:"girl", role:"Wallflower turned Season 3 heroine",
+  tm:"Already the most popular suspect, and already rising long before anyone met her on screen. Her own season in 2024 did nothing for her rank.",
+  wrong:"Penelope rose from 69th to 41st between 2015 and 2019, before the show existed. Her 2024 season even saw her slip to 36th. She has an alibi."},
+ {n:"Kate", sex:"girl", role:"Season 2 heroine, a fine shot",
+  tm:"The heroine of the most-watched season, and her name is vanishing. Fewer than half as common as before the show.",
+  wrong:"Kate fell to under half her pre-show rate. Whatever is happening, it is happening to someone else."},
+ {n:"Francesca", sex:"girl", role:"The quiet musical sister",
+  tm:"Holding steady around the same level she always held. No sudden movements.",
+  wrong:"Francesca barely moved. A 5% dip is not a crime spree."},
+ {n:"Anthony", sex:"boy", role:"Eldest son, Season 2 hero",
+  tm:"Down a quarter since 2019. Parents are, it seems, unmoved by a viscount.",
+  wrong:"Anthony fell 25%. The man is a victim of fashion, not a thief."},
+ {n:"Benedict", sex:"boy", role:"The artist, Season 4 hero",
+  tm:"Already in decline before the show and roughly flat since. His season arrived in 2026, too late for these registers.",
+  wrong:"Benedict has been flat at around 50 babies a year since 2019. His turn on screen came after the data ends."},
+ {n:"Colin", sex:"boy", role:"The traveller, Season 3 hero",
+  tm:"Up 25%, which sounds damning, until you count: between 15 and 34 baby Colins a year. Noise, not a trend.",
+  wrong:"Colin's numbers are tiny and bounce around: 15 one year, 30 the next. Too small to convict."}
+];
+const ew = DATA.ew;
+function rate(n,y){const r=(ew[n]||[]).find(d=>d[0]===y);return r?r[3]:null}
+S.forEach(s=>{const pre=(rate(s.n,2018)+rate(s.n,2019))/2;s.mult=rate(s.n,2024)/pre;
+  const last=ew[s.n].find(d=>d[0]===2024);s.rank=last[2];s.count=last[1];
+  const r19=ew[s.n].find(d=>d[0]===2019);s.rank19=r19[2];});
+
+const grid=document.getElementById('grid'), dossier=document.getElementById('dossier');
+const seen=new Set();
+S.forEach((s,i)=>{
+  const b=document.createElement('button');b.className='card';b.id='card-'+s.n;b.setAttribute('aria-pressed','false');
+  b.innerHTML=`<span class="chk">${s.sex==='girl'?'Miss':'Mr'} · <span class="st">Not yet questioned</span></span><span class="nm">${s.n}</span><span class="role">${s.role}</span><span class="stat"><span>Rank 2024</span><b>${s.rank.toLocaleString()}</b></span>`;
+  b.onclick=()=>open(i);grid.appendChild(b);
+});
+
+function fmtX(m){return (m>=1?'×':'×')+m.toFixed(2)}
+function open(i){
+  const s=S[i];seen.add(s.n);
+  document.querySelectorAll('.card').forEach((c,j)=>{c.setAttribute('aria-pressed',j===i?'true':'false');});
+  const c=document.getElementById('card-'+s.n);c.classList.add('seen');c.querySelector('.st').textContent='Questioned';
+  const up=s.mult>1.15, down=s.mult<0.9;
+  const tag=up?'Rising':down?'Falling':'Steady';
+  dossier.innerHTML=`<div class="dleft">
+     <div class="label">Dossier · ${s.role}</div>
+     <h3>${s.n}</h3>
+     <div class="mult"><b>${fmtX(s.mult)}</b><span class="label">2024 vs<br>2018–19 rate</span></div>
+     <span class="verdictTag" style="color:${up?'var(--seal)':'var(--muted)'}">${tag} · rank ${s.rank19.toLocaleString()} → ${s.rank.toLocaleString()}</span>
+     <p class="tm">“${s.tm}”</p>
+   </div>
+   <div class="chartbox" id="cb"><div class="chartcap">${s.n}, babies per 100,000 ${s.sex}s, England and Wales</div></div>`;
+  lineChart(document.getElementById('cb'), ew[s.n], {w:560,h:280,sex:s.sex});
+}
+
+function lineChart(box, rows, o){
+  rows=rows.filter(r=>r[0]>=2012);
+  const W=o.w,H=o.h,m={l:44,r:14,t:14,b:28};
+  const x0=Math.min(...rows.map(r=>r[0])), x1=Math.max(...rows.map(r=>r[0]));
+  const ymaxRaw=Math.max(...rows.map(r=>r[3]));
+  const step=niceStep(ymaxRaw/4), ymax=Math.ceil(ymaxRaw/step)*step;
+  const X=y=>m.l+(y-x0)/(x1-x0||1)*(W-m.l-m.r), Y=v=>H-m.b-v/ymax*(H-m.t-m.b);
+  const ns='http://www.w3.org/2000/svg';
+  let g='';
+  // post-premiere band
+  const bx=X(Math.max(2020.5,x0));
+  if(x1>2020) g+=`<rect x="${bx}" y="${m.t}" width="${W-m.r-bx}" height="${H-m.t-m.b}" fill="var(--band)"/><text x="${bx+6}" y="${m.t+14}" class="lbl" style="font-family:var(--mono);font-size:11px;fill:var(--muted)">After the premiere</text>`;
+  for(let v=0;v<=ymax+1e-9;v+=step){g+=`<g class="axis"><line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke-width="1"/><text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end">${+v.toFixed(1)}</text></g>`}
+  const yrs=[];for(let y=x0;y<=x1;y++)yrs.push(y);
+  const every=(x1-x0)>8?2:1;
+  yrs.forEach(y=>{if((y-x0)%every===0||y===x1)g+=`<g class="axis"><text x="${X(y)}" y="${H-8}" text-anchor="middle">${y}</text></g>`});
+  const d=rows.map((r,k)=>(k?'L':'M')+X(r[0]).toFixed(1)+','+Y(r[3]).toFixed(1)).join('');
+  g+=`<path d="${d}" fill="none" stroke="var(--line)" stroke-width="2" stroke-linejoin="round"/>`;
+  const last=rows[rows.length-1];
+  g+=`<circle cx="${X(last[0])}" cy="${Y(last[3])}" r="4.5" fill="var(--line)" stroke="var(--sheet)" stroke-width="2"/>`;
+  g+=`<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${H-m.b}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3" visibility="hidden"/><circle id="dot" r="5" fill="var(--line)" stroke="var(--sheet)" stroke-width="2" visibility="hidden"/>`;
+  g+=`<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent" id="hit"/>`;
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('role','img');
+  svg.setAttribute('aria-label',`Line chart, ${last[3]} per 100,000 in ${last[0]}`);svg.innerHTML=g;box.appendChild(svg);
+  const tip=document.createElement('div');tip.className='tip';tip.hidden=true;box.appendChild(tip);
+  const hit=svg.querySelector('#hit'),xh=svg.querySelector('#xh'),dot=svg.querySelector('#dot');
+  function move(ev){const p=svg.getBoundingClientRect();const sx=(ev.clientX-p.left)*W/p.width;
+    let best=rows[0];rows.forEach(r=>{if(Math.abs(X(r[0])-sx)<Math.abs(X(best[0])-sx))best=r});
+    xh.setAttribute('x1',X(best[0]));xh.setAttribute('x2',X(best[0]));xh.setAttribute('visibility','visible');
+    dot.setAttribute('cx',X(best[0]));dot.setAttribute('cy',Y(best[3]));dot.setAttribute('visibility','visible');
+    tip.hidden=false;tip.innerHTML=`<b>${best[0]}</b> · ${best[1].toLocaleString()} babies<br>${best[3]} per 100k · rank ${best[2].toLocaleString()}`;
+    const bx=box.getBoundingClientRect();tip.style.left=Math.min(Math.max((p.left-bx.left)+X(best[0])*p.width/W,80),bx.width-80)+'px';tip.style.top=((p.top-bx.top)+Y(best[3])*p.height/H)+'px';}
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerleave',()=>{tip.hidden=true;xh.setAttribute('visibility','hidden');dot.setAttribute('visibility','hidden')});
+}
+function niceStep(raw){const p=Math.pow(10,Math.floor(Math.log10(raw)));const f=raw/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
+
+// accusation
+const acc=document.getElementById('accuse'), ruling=document.getElementById('ruling');
+S.forEach(s=>{const b=document.createElement('button');b.className='acc';b.id='acc-'+s.n;b.textContent=s.n;
+  b.onclick=()=>{
+    if(s.guilty){b.classList.add('right');ruling.textContent=`Correct. ${seen.size<3?'A bold guess, and a lucky one. ':''}The seal is broken. Read the verdict below.`;
+      document.getElementById('seal').innerHTML='<div>Case<b>№ 24</b>Solved</div>';document.getElementById('seal').classList.add('open');
+      showReveal();document.getElementById('reveal').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+    else{b.classList.add('wrong');ruling.textContent=s.wrong+' Try again.';}
+  };acc.appendChild(b)});
+
+let revealed=false;
+function showReveal(){
+  const r=document.getElementById('reveal');r.hidden=false;if(revealed)return;revealed=true;
+  const trio=document.getElementById('trio');
+  [['ew','England and Wales'],['sc','Scotland'],['ni','Northern Ireland']].forEach(([k,lab])=>{
+    const d=document.createElement('div');d.className='chartbox';
+    const rows=DATA[k].Daphne.filter(x=>x[0]>=2015);
+    d.innerHTML=`<div class="label">${lab}</div><div class="chartcap">Daphne per 100,000 girls${k==='ni'?' (first recorded 2025)':''}</div>`;
+    trio.appendChild(d);
+    if(rows.length>1) lineChart(d,rows,{w:320,h:200,sex:'girl'});
+    else {const p=document.createElement('p');p.className='tm';p.style.fontFamily='var(--fell)';p.style.fontStyle='italic';
+      p.textContent=rows.length?`Too rare to count until 2025, when ${rows[0][1]} baby Daphnes cleared the suppression line for the first time, at rank ${rows[0][2]}.`:'No data.';d.appendChild(p);}
+  });
+  let t='<table class="tbl"><thead><tr><th>Name</th><th>2018–19 rate</th><th>2024 rate</th><th>Change</th><th>Rank 2019</th><th>Rank 2024</th></tr></thead><tbody>';
+  [...S].sort((a,b)=>b.mult-a.mult).forEach(s=>{t+=`<tr><td>${s.n}</td><td>${((rate(s.n,2018)+rate(s.n,2019))/2).toFixed(1)}</td><td>${rate(s.n,2024).toFixed(1)}</td><td>${fmtX(s.mult)}</td><td>${s.rank19.toLocaleString()}</td><td>${s.rank.toLocaleString()}</td></tr>`});
+  document.getElementById('tbl').innerHTML=t+'</tbody></table>';
+}
+open(2); // start with Penelope, the obvious suspect
+</script>
+
+</body>
+</html>
